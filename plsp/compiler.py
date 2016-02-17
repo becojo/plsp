@@ -2,6 +2,10 @@ from parser import *
 from peak.util.assembler import Code, Label
 from analyser import LexicalAnalyser
 import imp
+import dis
+import struct
+import time
+import marshal
 
 def compile_pyc(code, buf):
     buf.write(imp.get_magic())
@@ -52,7 +56,9 @@ def load_var(atom, c):
     if isinstance(atom, AIdentifierAtom):
         var = atom.getIdentifier().getText()
 
-        if var in ['True', 'False', 'None', 'raw_input', 'int', 'float', 'str', 'map', '__name__']:
+        c.set_lineno(atom.getIdentifier().getLine())
+
+        if var in ['True', 'False', 'None', 'raw_input', 'int', 'float', 'str', 'map', '__name__', 'getattr']:
             c.LOAD_GLOBAL(var)
         else:
             c.LOAD_FAST(var)
@@ -106,6 +112,14 @@ def compile_atom(atom, c):
         xs = atom.getList().getAtom()
         head = xs[0]
 
+        if isinstance(head, AListAtom):
+            for x in xs:
+                load_value(x, c)
+
+            c.CALL_FUNCTION(len(xs) - 1)
+
+            return True
+
         if isinstance(head, AIdentifierAtom):
             fn = head.getIdentifier().getText()
 
@@ -125,15 +139,6 @@ def compile_atom(atom, c):
                     c.PRINT_NEWLINE()
                     c.LOAD_CONST(None)
                     return True
-
-            if fn == 'add':
-                a = xs[1]
-                b = xs[2]
-
-                if load_value(a, c):
-                    if load_value(b, c):
-                        c.BINARY_ADD()
-                        return True
 
             if fn == 'ife':
                 false_part = Label()
@@ -216,6 +221,7 @@ def compile_atom(atom, c):
 
                 func_code.co_argcount = len(arguments)
                 func_code.co_varnames = [arg.getIdentifier().getText() for arg in arguments]
+                # func_code.co_cellvars = []
 
                 load_value(body, func_code)
 
@@ -225,16 +231,6 @@ def compile_atom(atom, c):
                 c.MAKE_FUNCTION(0)
 
                 return True
-
-            if fn in ['<', '>', '<=', '>=', '==', '!=']:
-                a = xs[1]
-                b = xs[2]
-
-                if load_value(a, c):
-                    if load_value(b, c):
-                        c.COMPARE_OP(fn)
-                        return True
-
 
             if fn == 'import':
                 name = xs[1].getIdentifier().getText()
