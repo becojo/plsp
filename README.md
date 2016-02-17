@@ -49,3 +49,45 @@ Or import it a Python script
      (main)
      None)
 ```
+
+## Syntax 
+
+<table>
+  <tr>
+    <th></th>
+    <th>Plsp</th>
+    <th>Python</th>
+  </tr>
+  <tr>
+    <td>List</td>
+    <td><pre><code>[1 2 3]</code></pre></td>
+    <td><pre><code>[1, 2, 3]</code></pre></td>
+  </tr>
+  <tr>
+    <td>Dict</td>
+    <td><pre><code>{'a' 1 'b' 2 'c' 3}</code></pre></td>
+    <td><pre><code>{'a': 1, 'b': 2, 'c': 3}</code></pre></td>
+  </tr>
+  <tr>
+    <td>Lambda</td>
+    <td><pre><code>(fn [x] (== x 5)</code></pre></td>
+    <td><pre><code>lambda x: x == 5</code></pre></td>
+  </tr>
+  <tr>
+    <td>If</td>
+    <td><pre><code>(ife (== password "admin123") 
+     (print "Hello admin") 
+     (print "Nope"))</code></pre></td>
+    <td><pre><code>if password == "admin123":
+    print 'Hello admin'
+else:
+    print 'Nope'</code></pre></td>
+  </tr>
+  <tr>
+    <td>Function</td>
+    <td><pre><code>(defn hello [name]
+  (print (add "hello " name)))</code></pre></td>
+    <td><pre><code>def hello(name):
+    print 'hello ' + name</code></pre></td>
+  </tr>
+</table>
