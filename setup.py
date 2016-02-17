@@ -9,5 +9,5 @@ setup(name='plsp',
       license='GPLv3',
       packages=['plsp'],
       zip_safe=False,
-      scripts=['bin/plsp']
+      scripts=['bin/plsp'],
       install_requires=['BytecodeAssembler==0.6'])
