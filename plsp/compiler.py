@@ -242,6 +242,18 @@ def compile_atom(atom, c):
 
                 return True
 
+            if fn == '.':
+                if isinstance(xs[1], AIdentifierAtom):
+                    load_value(xs[2], c)
+                    c.LOAD_ATTR(xs[1].getIdentifier().getText())
+                else:
+                    c.LOAD_GLOBAL('getattr')
+                    load_value(xs[2], c)
+                    load_value(xs[1], c)
+                    c.CALL_FUNCTION(2)
+
+                return True
+
             if load_var(head, c):
                 for x in xs[1:]:
                     load_value(x, c)
