@@ -23,15 +23,16 @@ Helpers
         upper_case = ['A' .. 'Z'];
         letter = lower_case | upper_case;
 
-        symbol = '*' | '+' | '-' | '_' | ''' | '?' | '<' | '>' | '=' | '.';
+        symbol = '*' | '+' | '-' | '_' | ''' | '?' | '<' | '>' | '=' | '.' | '!'; 
         identifier_chars = letter | digit | symbol;
 
         not_cr_lf = [all - [cr + lf]];
+        dash = '-';
 
 Tokens
         blank = blank*;
-        integer = digit+;
-        float = digit+ dot digit+;
+        integer = dash? digit+;
+        float = dash? digit+ dot digit+;
         hex_number = '0' ('x' | 'X') hex_digit+;
         string = quote all_no_quote* quote;
         left_paren = '(';
