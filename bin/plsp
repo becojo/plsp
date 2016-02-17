@@ -2,20 +2,20 @@
 
 import argparse
 import plsp.compiler
-import marshal
-import struct
-import time
-import imp
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('file')
 parser.add_argument('--output')
+parser.add_argument('--disassembly', '-d', action='store_true')
 
 args = parser.parse_args()
 
 if args.file:
     buf = open(args.file, 'r')
     code = plsp.compiler.compile(buf)
+
+    if args.disassembly:
+        dis.dis(code)
 
     if args.output:
         with open(args.output, 'w') as out_file:
