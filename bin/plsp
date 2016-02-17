@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import argparse
+import plsp.compiler
+import marshal
+import struct
+import time
+import imp
+
+parser = argparse.ArgumentParser(description='')
+parser.add_argument('file')
+parser.add_argument('--output')
+
+args = parser.parse_args()
+
+if args.file:
+    buf = open(args.file, 'r')
+    code = plsp.compiler.compile(buf)
+
+    if args.output:
+        with open(args.output, 'w') as out_file:
+            plsp.compiler.compile_pyc(code, out_file)
+    else:
+        exec code
