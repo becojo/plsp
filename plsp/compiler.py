@@ -1,6 +1,6 @@
 from parser import *
 from peak.util.assembler import Code, Label
-from analyser import LexicalAnalyser
+from analyser import SemanticAnalyser
 import imp
 import dis
 import struct
@@ -17,6 +17,8 @@ def compile(buf):
     lexer = Lexer(buf)
     parser = Parser(lexer)
     ast = parser.parse()
+
+    ast.apply(SemanticAnalyser())
 
     atoms = ast.getPProgram().getAtom()
     code = Code()
@@ -58,10 +60,11 @@ def load_var(atom, c):
 
         c.set_lineno(atom.getIdentifier().getLine())
 
-        if var in ['True', 'False', 'None', 'raw_input', 'int', 'float', 'str', 'map', '__name__', 'getattr']:
-            c.LOAD_GLOBAL(var)
-        else:
+        if hasattr(atom, 'scope') and atom.scope == 'local':
             c.LOAD_FAST(var)
+        else:
+            c.LOAD_GLOBAL(var)
+
 
         return True
 
@@ -129,7 +132,7 @@ def compile_atom(atom, c):
                 var = xs[1].getIdentifier().getText()
                 if load_value(xs[2], c):
 
-                    c.STORE_FAST(var)
+                    c.STORE_GLOBAL(var)
                     c.LOAD_CONST(var)
                     return True
 
@@ -201,6 +204,7 @@ def compile_atom(atom, c):
                 body = xs[3]
                 func_code = Code()
 
+                func_code.co_name = name
                 func_code.co_argcount = len(arguments)
                 func_code.co_varnames = [arg.getIdentifier().getText() for arg in arguments]
 
@@ -210,7 +214,7 @@ def compile_atom(atom, c):
 
                 c.LOAD_CONST(func_code.code())
                 c.MAKE_FUNCTION(0)
-                c.STORE_FAST(name)
+                c.STORE_GLOBAL(name)
 
                 return True
 
@@ -233,12 +237,26 @@ def compile_atom(atom, c):
                 return True
 
             if fn == 'import':
-                name = xs[1].getIdentifier().getText()
+                pkg = xs[1].getIdentifier().getText()
 
                 c.LOAD_CONST(-1)
-                c.LOAD_CONST(None)
-                c.IMPORT_NAME(name)
-                c.STORE_FAST(name)
+
+                if len(xs) == 3:
+
+                   names = [t.getIdentifier().getText() for t in xs[2].getVector().getAtom()]
+                   imports = tuple(names)
+
+                   c.LOAD_CONST(imports)
+                   c.IMPORT_NAME(pkg)
+
+                   for name in names:
+                       c.IMPORT_FROM(name)
+                       c.STORE_FAST(name)
+
+                else:
+                    c.LOAD_CONST(None)
+                    c.IMPORT_NAME(pkg)
+                    c.STORE_FAST(pkg)
 
                 return True
 
@@ -252,6 +270,12 @@ def compile_atom(atom, c):
                     load_value(xs[1], c)
                     c.CALL_FUNCTION(2)
 
+                return True
+
+            if fn == 'exec':
+                load_value(xs[1], c)
+                c.MAKE_FUNCTION(0)
+                c.CALL_FUNCTION(0)
                 return True
 
             if load_var(head, c):

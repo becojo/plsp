@@ -2,6 +2,7 @@
 
 import argparse
 import plsp.compiler
+import dis
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('file')
