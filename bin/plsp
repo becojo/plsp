@@ -2,18 +2,18 @@
 
 import argparse
 import plsp.compiler
+import plsp.repl
 import dis
 
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('file')
-parser.add_argument('--output')
+parser.add_argument('file', nargs='?', type=argparse.FileType('r'))
+parser.add_argument('--output', '-o')
 parser.add_argument('--disassembly', '-d', action='store_true')
 
 args = parser.parse_args()
 
 if args.file:
-    buf = open(args.file, 'r')
-    code = plsp.compiler.compile(buf)
+    code = plsp.compiler.compile(args.file, True)
 
     if args.disassembly:
         dis.dis(code)
@@ -23,3 +23,6 @@ if args.file:
             plsp.compiler.compile_pyc(code, out_file)
     else:
         exec code
+
+else:
+    plsp.repl.repl()

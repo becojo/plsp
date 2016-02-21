@@ -4,7 +4,7 @@ class SemanticAnalyser(DepthFirstAdapter):
     def __init__(self):
         super(SemanticAnalyser, self).__init__()
 
-        self.local_scope = {}
+        self.local_scope = set()
 
     def inAListAtom(self, node):
         atoms = node.getList().getAtom()
@@ -17,9 +17,13 @@ class SemanticAnalyser(DepthFirstAdapter):
                 args = atoms[2].getVector().getAtom()
 
                 for arg in args:
-                    self.local_scope.add(arg.getIdentifier.getText())
+                    self.local_scope.add(arg.getIdentifier().getText())
 
+            if head_text == 'let':
+                args = atoms[1].getVector().getAtom()
 
+                for arg in args[::2]:
+                    self.local_scope.add(arg.getIdentifier().getText())
 
     def outAListAtom(self, node):
         atoms = node.getList().getAtom()
@@ -32,7 +36,14 @@ class SemanticAnalyser(DepthFirstAdapter):
                 args = atoms[2].getVector().getAtom()
 
                 for arg in args:
-                    self.local_scope.remove(arg.getIdentifier.getText())
+                    self.local_scope.remove(arg.getIdentifier().getText())
+
+            if head_text == 'let':
+                args = atoms[1].getVector().getAtom()
+
+                for arg in args[::2]:
+                    self.local_scope.remove(arg.getIdentifier().getText())
+
 
     def inAIdentifierAtom(self, node):
         name = node.getIdentifier().getText()

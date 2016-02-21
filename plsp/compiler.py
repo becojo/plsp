@@ -13,7 +13,7 @@ def compile_pyc(code, buf):
     marshal.dump(code, buf)
 
 
-def compile(buf):
+def compile(buf, add_return=False):
     lexer = Lexer(buf)
     parser = Parser(lexer)
     ast = parser.parse()
@@ -23,10 +23,11 @@ def compile(buf):
     atoms = ast.getPProgram().getAtom()
     code = Code()
 
-    for atom in atoms:
-        compile_atom(atom, code)
-
     code.LOAD_CONST(None)
+
+    for atom in atoms:
+        load_value(atom, code)
+
     code.RETURN_VALUE()
 
     return code.code()
@@ -64,7 +65,6 @@ def load_var(atom, c):
             c.LOAD_FAST(var)
         else:
             c.LOAD_GLOBAL(var)
-
 
         return True
 
@@ -170,6 +170,21 @@ def compile_atom(atom, c):
 
                 return True
 
+            if fn == 'let':
+                pair = xs[1].getVector().getAtom()
+                body = xs[2]
+                n = len(pair) / 2
+
+                for i in range(n):
+                    load_value(pair[i * 2 + 1], c)
+                    print pair[i * 2]
+                    unpack_var(pair[i * 2], c)
+
+                load_value(body, c)
+
+                # todo: DELETE_FAST
+
+                return True
 
             if fn == 'for':
                 pair = xs[1].getVector().getAtom()
@@ -216,6 +231,8 @@ def compile_atom(atom, c):
                 c.MAKE_FUNCTION(0)
                 c.STORE_GLOBAL(name)
 
+                c.LOAD_CONST(name)
+
                 return True
 
             if fn == 'fn':
@@ -251,12 +268,12 @@ def compile_atom(atom, c):
 
                    for name in names:
                        c.IMPORT_FROM(name)
-                       c.STORE_FAST(name)
+                       c.STORE_GLOBAL(name)
 
                 else:
                     c.LOAD_CONST(None)
                     c.IMPORT_NAME(pkg)
-                    c.STORE_FAST(pkg)
+                    c.STORE_GLOBAL(pkg)
 
                 return True
 
