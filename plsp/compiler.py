@@ -143,7 +143,7 @@ def compile_atom(atom, c):
                     c.LOAD_CONST(None)
                     return True
 
-            if fn == 'ife':
+            if fn == 'if' or fn == 'ife':
                 false_part = Label()
                 finish = Label()
 
@@ -156,17 +156,13 @@ def compile_atom(atom, c):
 
                 c(false_part)
                 c.POP_TOP() # discard boolean result
-                load_value(xs[3], c)
+
+                if len(xs) == 4:
+                    load_value(xs[3], c)
+                else:
+                    c.LOAD_CONST(None)
 
                 c(finish)
-
-                return True
-
-            if fn == 'list':
-                for x in xs[1:]:
-                    load_value(x, c)
-
-                c.BUILD_LIST(len(xs) - 1)
 
                 return True
 
