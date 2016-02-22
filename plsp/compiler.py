@@ -13,7 +13,7 @@ def compile_pyc(code, buf):
     marshal.dump(code, buf)
 
 
-def compile(buf, add_return=False):
+def compile(buf, filename, add_return=False):
     lexer = Lexer(buf)
     parser = Parser(lexer)
     ast = parser.parse()
@@ -22,6 +22,8 @@ def compile(buf, add_return=False):
 
     atoms = ast.getPProgram().getAtom()
     code = Code()
+
+    code.co_filename = filename
 
     code.LOAD_CONST(None)
 
@@ -217,6 +219,7 @@ def compile_atom(atom, c):
                 body = xs[3]
                 func_code = Code()
 
+                func_code.co_filename = c.co_filename
                 func_code.co_name = name
                 func_code.co_argcount = len(arguments)
                 func_code.co_varnames = [arg.getIdentifier().getText() for arg in arguments]
@@ -238,6 +241,7 @@ def compile_atom(atom, c):
                 body = xs[2]
                 func_code = Code()
 
+                func_code.co_filename = c.co_filename
                 func_code.co_argcount = len(arguments)
                 func_code.co_varnames = [arg.getIdentifier().getText() for arg in arguments]
                 # func_code.co_cellvars = []

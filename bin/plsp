@@ -13,7 +13,7 @@ parser.add_argument('--disassembly', '-d', action='store_true')
 args = parser.parse_args()
 
 if args.file:
-    code = plsp.compiler.compile(args.file, True)
+    code = plsp.compiler.compile(args.file, args.file.name, True)
 
     if args.disassembly:
         dis.dis(code)

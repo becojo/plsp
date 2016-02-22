@@ -15,7 +15,7 @@ def repl():
                 # try parsing command
                 try:
                     buf = StringIO(cmd)
-                    code = plsp.compiler.compile(buf, False)
+                    code = plsp.compiler.compile(buf, '<stdin>', False)
                     finished = True
 
                 except Exception:
