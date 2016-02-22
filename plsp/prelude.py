@@ -4,17 +4,20 @@ def drop(n, xs):
     '''
     return xs[n:]
 
+
 def take(n, xs):
     '''(take n xs)
     Returns the n first elements of the list xs.
     '''
     return xs[0:n]
 
+
 def apply(f, *xs):
     '''(apply f xs)
     Invokes the function f using the list xs as arguments.
     '''
     return f(*xs)
+
 
 def comp(*fs):
     '''(comp) (comp f1) (comp f1 f2 ...)
@@ -24,17 +27,20 @@ def comp(*fs):
         return reduce(lambda x, f: f(x), fs, x)
     return f
 
+
 def first(xs):
     '''(first xs)
     Returns the first element of the list.
     '''
     return xs[0]
 
+
 def cons(x, xs):
     '''(cons x xs)
     Returns a new list with the first item is x and the tail is xs.
     '''
     return [x] + xs
+
 
 def doc(f):
     '''(doc f)

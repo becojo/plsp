@@ -32,6 +32,7 @@ def compile(buf, add_return=False):
 
     return code.code()
 
+
 def load_const(atom, c):
     if isinstance(atom, ANumberAtom):
         n = atom.getNumber()
@@ -73,6 +74,7 @@ def load_var(atom, c):
 
 def load_value(atom, c):
     return load_const(atom, c) or load_var(atom, c) or compile_atom(atom, c)
+
 
 def unpack_var(atom, code):
     if isinstance(atom, AIdentifierAtom):
