@@ -12,19 +12,13 @@ def take(n, xs):
     return xs[0:n]
 
 
-def apply(f, *xs):
-    '''(apply f xs)
-    Invokes the function f using the list xs as arguments.
-    '''
-    return f(*xs)
-
-
 def comp(*fs):
     '''(comp) (comp f1) (comp f1 f2 ...)
     Returns a function that is the composition of the functions given as arguments.
     '''
+    rev = fs[::-1]
     def f(x):
-        return reduce(lambda x, f: f(x), fs, x)
+        return reduce(lambda x, f: f(x), rev, x)
     return f
 
 
@@ -54,3 +48,14 @@ def id(x):
     The identity function. It just returns x.
     '''
     return x
+
+def partial(f, *args):
+    '''(partial f x1 x2 ...)
+'''
+    def inner(*rest):
+        return f(*(args + rest))
+    return inner
+
+
+def splat():
+    pass
