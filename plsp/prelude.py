@@ -1,3 +1,16 @@
+class symbol:
+    def __init__(self, name):
+        self.name = name
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+
+class quote:
+    def __init__(self, value):
+        self.value = value
+
+
 def drop(n, xs):
     '''(drop n xs)
     Returns a new list without the first n elements.

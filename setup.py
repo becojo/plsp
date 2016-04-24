@@ -10,4 +10,5 @@ setup(name='plsp',
       packages=['plsp'],
       zip_safe=False,
       scripts=['bin/plsp'],
+      test_suite='test',
       install_requires=['BytecodeAssembler==0.6'])
