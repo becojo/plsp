@@ -3,6 +3,7 @@ from lexer import Lexer
 from peak.util.assembler import Code, Label
 import prelude
 
+
 class Compiler:
     def __init__(self, ast, filename='<eval>'):
         self.ast = ast
@@ -29,11 +30,7 @@ class Compiler:
 
                     return True
 
+
         if isinstance(atom, int) or isinstance(atom, float) or isinstance(atom, str):
             self.code.LOAD_CONST(atom)
             return True
-
-
-c = Compiler([[prelude.symbol('print'), "asf"]])
-
-exec (c.code.code())

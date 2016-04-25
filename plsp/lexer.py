@@ -21,6 +21,14 @@ class Lexer:
                 self.tokens.append({ 'type': 'CLOSE_PAREN' })
                 self.index += 1
 
+            elif c == '[':
+                self.tokens.append({ 'type': 'OPEN_LIST' })
+                self.index += 1
+
+            elif c == ']':
+                self.tokens.append({ 'type': 'CLOSE_LIST' })
+                self.index += 1
+
             elif c == '"':
                 self.read_string()
 

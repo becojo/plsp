@@ -1,5 +1,5 @@
 import ast
-from plsp.prelude import symbol
+from plsp.prelude import symbol, quote
 
 class Parser:
     def __init__(self, tokens):
@@ -20,8 +20,10 @@ class Parser:
         tok = self.tokens[self.index]
 
         if tok['type'] == 'OPEN_PAREN':
-            self.index += 1
-            return self.read_list()
+            return self.read_list('CLOSE_PAREN')
+
+        if tok['type'] == 'OPEN_LIST':
+            return quote(self.read_list('CLOSE_LIST'))
 
         elif tok['type'] == 'SYMBOL':
             self.index += 1
@@ -35,10 +37,12 @@ class Parser:
         return ast.literal_eval(tok['value'])
 
 
-    def read_list(self):
+    def read_list(self, ending):
         values = []
 
-        while not self.is_eof() and self.tokens[self.index]['type'] != 'CLOSE_PAREN':
+        self.index += 1
+
+        while not self.is_eof() and self.tokens[self.index]['type'] != ending:
             values.append(self.parse())
 
         return values
